@@ -1,0 +1,126 @@
+.cookie-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: hsl(var(--background) / 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.cookie-content {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  box-shadow: 0 -4px 20px -5px hsla(var(--shadow, 0 0% 0% / 0.1));
+}
+
+.cookie-icon {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: hsl(var(--primary));
+}
+
+.cookie-text {
+  flex-grow: 1;
+}
+
+.cookie-title {
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: hsl(var(--foreground));
+}
+
+.cookie-text p {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+  margin-top: 0.25rem;
+}
+
+.cookie-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.accept-button {
+  background: linear-gradient(90deg, #66d1cd 0%, #2c7a7b 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 209, 205, 0.3);
+}
+
+.accept-button:hover {
+  background: linear-gradient(90deg, #2c7a7b 0%, #66d1cd 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 209, 205, 0.4);
+}
+.link-text {
+  text-decoration: underline;
+  color: rgb(0, 0, 0); /* o el color que quieras */
+}
+
+
+.link-button {
+  color: hsl(var(--primary));
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  background: transparent;
+  border: 1px solid hsl(var(--primary));
+}
+
+.link-button:hover {
+  background: hsl(var(--primary));
+  color: white;
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+  .cookie-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .cookie-icon {
+    width: 2rem;
+    height: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .cookie-actions {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+
+  .accept-button,
+  .link-button {
+    flex: 1;
+    text-align: center;
+  }
+}

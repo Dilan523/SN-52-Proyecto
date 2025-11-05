@@ -1,0 +1,292 @@
+/* ========== FORM ========== */
+.formulario {
+  margin-top: auto;
+  padding: 2rem;
+  background: linear-gradient(135deg, #21b0a6 0%, #e0f7fa 100%);
+  border-radius: 38px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.formulario-container {
+  position: relative;
+  max-width: 500px;
+  margin: 100px auto;
+}
+
+/* ========== Titulo ========== */
+.titulo {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 4rem;     
+  font-weight: bold;
+  color: #222 !important;     
+  font-family: serif;
+  letter-spacing: 1px;
+  position: relative;
+  z-index: 10;
+}
+@media (max-width: 520px) {
+  .titulo {
+    font-size: 2rem;
+  }
+}
+
+/* ========== Foto de Perfil ========== */
+.form-profile-pic-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.profile-pic-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.form-profile-pic {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #1b8aad;
+}
+
+.profile-pic-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: white;
+  border: 2px dashed #1b8aad;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s;
+}
+
+.profile-pic-wrapper:hover .profile-pic-placeholder {
+  background: #f0f0f0;
+  border-color: #00796b;
+}
+
+.profile-pic-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #79d9ab;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.3s;
+}
+
+.profile-pic-wrapper:hover .profile-pic-overlay {
+  transform: scale(1.1);
+}
+
+.btn-cambiar-foto {
+  margin-top: 0.8rem;
+  background: none;
+  border: none;
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ========== Campos Formulario ========== */
+.form-group {
+  position: relative;
+  margin-bottom: 0.8rem; 
+  width: 100%;
+}
+
+.form-group label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.7);
+  margin-bottom: 0.2rem;
+  display: block;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: 0.3s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #21b0a6;
+  box-shadow: 0 0 0 3px rgba(226, 231, 230, 0.15);
+}
+
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #919188;
+}
+
+/* ========== Estados de Error ========== */
+.error-message {
+  color: #ff4d4d;
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+}
+
+.form-group input.error {
+  border-color: #ff4d4d;
+}
+
+/* ========== Submit Button ========== */
+.btn-enviar {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.5);
+  color: #000;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s;
+}
+
+.btn-enviar:hover:not(:disabled) {
+  background: #21b0a6;
+  color: #fff;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(4, 4, 4, 0.5);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ========== Link al Login ========== */
+.login-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: rgb(54, 54, 53);
+}
+
+.login-link a {
+  color: rgb(94, 123, 179);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 520px) {
+  .formulario-container {
+    margin: 50px 1rem;
+  }
+
+  .formulario {
+    padding: 1.5rem;
+  }
+
+  .form-profile-pic-container {
+    margin-bottom: 1rem;
+  }
+
+  .form-profile-pic, .profile-pic-placeholder {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+.register-decor-top {
+  position: absolute; 
+  top: 30px;
+  right: -150px;
+  max-width: 400px;
+  width: 100%;
+  height: auto;
+  z-index: 1;
+}
+.register-decor-right {
+  position: absolute;
+  right: -200px;
+  bottom: -120px;
+  max-width: 480px;
+  width: 100%;
+  height: auto;
+  z-index: 1; 
+}
+.register-decor-bottom{
+  position: absolute;
+  bottom: 500px;
+  left: -80px;
+  max-width: 450px;
+  width: 100%;
+  height: auto;
+  transform: translate(0, 0);
+  transition: transform 0.3s ease-in-out;
+  z-index: 1;
+}
+.register-decor-left{
+  position: absolute;
+  bottom: -125px;
+  left: -140px;
+  max-width: 400px;
+  width: 100%;
+  height: auto;
+  transform: translate(0, 0);
+  transition: transform 0.3s ease-in-out;
+  z-index: 1;
+}
+
+/* Responsive adjustments for decorative images */
+@media (max-width: 768px) {
+  .register-decor-top,
+  .register-decor-right,
+  .register-decor-bottom,
+  .register-decor-left {
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-decor-top,
+  .register-decor-right,
+  .register-decor-bottom,
+  .register-decor-left {
+    display: none;
+  }
+}

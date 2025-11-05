@@ -1,0 +1,330 @@
+/* Bienestar Page Styles */
+.bienestar-page {
+  background: linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%);
+  min-height: 100vh;
+}
+
+.bienestar-container {
+  width: 100%;
+  padding: 0;
+}
+
+.bienestar-main-content {
+  width: 100%;
+  background: #fff;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.bienestar-sections {
+  padding: 25px;
+}
+
+/* Create News Section */
+.create-news-section {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.create-news-btn {
+  background-color: #66d1cd !important;
+  border-color: #66d1cd !important;
+  font-size: 16px !important;
+  padding: 10px 20px !important;
+  border-radius: 8px !important;
+}
+
+/* Content Section */
+.bienestar-content-section {
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.bienestar-content-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.bienestar-content-section h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2c7a7b;
+  margin-bottom: 15px;
+  padding-left: 15px;
+  border-left: 4px solid #66d1cd;
+}
+
+/* News Grid */
+.bienestar-news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* News Card */
+.bienestar-news-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+
+.bienestar-news-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.bienestar-news-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bienestar-news-category {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #286b6b;
+  text-transform: uppercase;
+}
+
+.bienestar-news-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #222;
+  margin: 0;
+}
+
+.bienestar-news-excerpt {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+.bienestar-news-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.bienestar-news-author {
+  font-weight: 500;
+}
+
+.bienestar-news-date {
+  font-style: italic;
+}
+
+.bienestar-news-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: auto;
+  align-items: center;
+}
+
+.bienestar-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background-color: #f3f2f2;
+  color: #141414;
+  transition: background-color 0.3s ease;
+}
+
+.bienestar-action-btn:hover {
+  background-color: #adedcba4;
+}
+
+.bienestar-action-btn.like-active {
+  background-color: #ff6b6b;
+  color: white;
+}
+
+.bienestar-action-btn.save-active {
+  background-color: #ffd93d;
+  color: #333;
+}
+
+/* Autores Bar */
+.bienestar-autores-bar {
+  display: flex;
+  justify-content: space-around;
+  padding: 30px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 15px;
+  margin: 30px 0;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.bienestar-autor {
+  text-align: center;
+  max-width: 140px;
+}
+
+.bienestar-autor img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 12px;
+  border: 3px solid #66d1cd;
+}
+
+.bienestar-autor h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c7a7b;
+  margin-bottom: 6px;
+}
+
+.bienestar-autor p {
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* Bienestar Integral Section */
+.bienestar-integral-section {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  margin: 60px 0;
+  padding: 50px;
+  background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+  border-radius: 25px;
+  color: white;
+  box-shadow: 0 15px 35px rgba(76, 175, 80, 0.4);
+}
+
+.bienestar-integral-text {
+  flex: 1;
+  text-align: center;
+}
+
+.bienestar-integral-text h1 {
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin-bottom: 25px;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+}
+
+.bienestar-integral-text p {
+  font-size: 1.2rem;
+  line-height: 1.9;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.bienestar-integral-images {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  width: 100%;
+}
+
+/* ========== FEATURED SECTION ========== */
+/* Sección destacada con margen inferior */
+.bienestar-featured-section {
+  margin-bottom: 30px;
+}
+
+/* Tarjeta destacada con borde redondeado y overflow oculto */
+.bienestar-featured-card {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Imagen destacada con tamaño completo y ajuste de objeto */
+.bienestar-featured-image {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+/* Overlay oscuro para la imagen destacada */
+.bienestar-featured-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.3);
+}
+
+/* Contenido dentro de la tarjeta destacada */
+.bienestar-featured-content {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  color: white;
+}
+
+/* Categoría dentro de la tarjeta destacada */
+.bienestar-featured-category {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+/* Título dentro de la tarjeta destacada */
+.bienestar-featured-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 5px 0 0 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .bienestar-container {
+    padding: 15px;
+  }
+
+  .bienestar-sections {
+    padding: 20px;
+  }
+
+  .bienestar-news-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .bienestar-integral-section {
+    padding: 30px 20px;
+    margin: 40px 0;
+    gap: 30px;
+  }
+
+  .bienestar-integral-text h1 {
+    font-size: 2.5rem;
+  }
+
+  .bienestar-integral-text p {
+    font-size: 1rem;
+  }
+
+  .bienestar-integral-images {
+    grid-template-columns: 1fr;
+  }
+
+  .bienestar-autores-bar {
+    flex-wrap: wrap;
+    gap: 25px;
+    padding: 20px;
+  }
+
+  .bienestar-autor {
+    max-width: 120px;
+  }
+}

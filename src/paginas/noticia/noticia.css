@@ -1,0 +1,146 @@
+/* ======================================= */
+/* 1. BLOCK: NOTICIA-PAGE (Contenedor Principal) */
+/* Define el layout y centrado de toda la página. */
+/* ======================================= */
+.noticia-page {
+    /* Box Model y Posicionamiento */
+    max-width: 980px; /* Limita el ancho del contenido */
+    margin: 24px auto; /* Centra horizontalmente y añade margen superior/inferior */
+    padding: 24px; /* Espacio interior para dispositivos pequeños */
+}
+
+/* ======================================= */
+/* 2. BLOCK: NOTICIA-CARD (Contenedor del Artículo) */
+/* Estilos visuales de la tarjeta flotante. */
+/* ======================================= */
+.noticia-card {
+    /* Apariencia */
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08); /* Sombra elegante */
+}
+
+/* ======================================= */
+/* 3. ELEMENTS dentro de NOTICIA */
+/* Estilos específicos de las partes internas del artículo. */
+/* ======================================= */
+
+/* --- A. HEADER (Encabezado) --- */
+.noticia-header {
+    /* Apariencia */
+    background: linear-gradient(90deg, #dff8f5, #baf0ea); /* Degradado suave */
+    /* Box Model */
+    padding: 20px 24px 12px 24px;
+}
+
+/* --- B. IMAGE (Imagen Principal) --- */
+.noticia-image {
+    /* Box Model */
+    width: 100%;
+    max-height: 420px;
+    /* Comportamiento */
+    object-fit: cover; /* Asegura que la imagen cubra sin distorsionarse */
+    /* Apariencia */
+    border-radius: 0; /* Asegura que no tenga esquinas redondeadas (si la card las tiene) */
+}
+
+/* --- C. TITLE (Título) --- */
+.noticia-title {
+    /* Tipografía */
+    font-size: 2rem;
+    color: #072126;
+    /* Box Model */
+    margin: 0;
+}
+
+/* --- D. META (Autor, Fecha, Categoría) --- */
+.noticia-meta {
+    /* Display y Layout */
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    /* Box Model */
+    padding-bottom: 8px;
+    /* Tipografía y Color */
+    font-size: 0.95rem;
+    color: #345;
+}
+
+/* --- E. CATEGORIA (Etiqueta dentro de Meta) --- */
+.categoria {
+    /* Tipografía */
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #0b6b4a;
+    /* Apariencia */
+    background: #e6f7f0;
+    border-radius: 20px;
+    /* Box Model */
+    padding: 6px 10px;
+}
+
+/* --- F. CONTENT (Cuerpo del Artículo) --- */
+.noticia-content {
+    /* Box Model */
+    padding: 18px 24px 28px 24px;
+    /* Tipografía y Color */
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #222;
+}
+
+/* --- G. CONTENT PARAGRAPHS (Párrafos dentro del Contenido) --- */
+.noticia-content p {
+    /* Box Model */
+    margin-bottom: 1rem;
+}
+
+/* --- H. ACTIONS (Botones de acciones) --- */
+.noticia-actions {
+    /* Display y Layout */
+    display: flex;
+    gap: 15px;
+    /* Box Model */
+    padding: 18px 24px 28px 24px;
+    /* Apariencia */
+    border-top: 1px solid #e5e7eb;
+    margin-top: 20px;
+}
+
+/* Botones de acción generales */
+.noticia-actions .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    background-color: #f3f2f2;
+    color: #141414;
+    transition: background-color 0.3s ease;
+}
+
+/* Efecto hover para botones de acción */
+.noticia-actions .action-btn:hover {
+    background-color: #adedcba4;
+}
+
+/* Botón like activo */
+.noticia-actions .action-btn.like-btn.active {
+    background-color: #fef2f2;
+    color: #dc2626;
+}
+
+/* Botón save activo */
+.noticia-actions .action-btn.save-btn.active {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+/* Mejoras responsivas */
+@media (max-width:720px){
+	.noticia-title{font-size:1.4rem}
+	.noticia-content{padding:12px}
+}
