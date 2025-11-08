@@ -1,0 +1,109 @@
+.page {
+  width: 100vw;
+  height: 100vh;
+  background: url("/fondo.avif") no-repeat center center fixed;
+  background-size: cover;
+
+  display: flex;
+  flex-direction: column; /* título arriba, form abajo */
+  align-items: center;
+  justify-content: center;
+  gap: 20px; /* espacio entre título y formulario */
+}
+
+/* Título */
+.title {
+  font-size: 3.5rem;
+  font-family: serif;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: white; /* destaca sobre el fondo */
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.6); /* efecto de sombra */
+  margin: 0; /* elimina bordes extra */
+  top: 130px;
+  left: 90px;
+  font-weight: 800;
+  position: absolute;
+}
+
+/* Caja del formulario con efecto vidrio */
+.form-container {
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 40px;
+  width: 650px;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Inputs */
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-form label {
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+}
+
+.login-form input {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+/* Botón */
+.login-form button {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.login-form button:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+.adorno {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+}
+.adorno-top-left {
+  top: -60px;
+  left: -110px;
+  width: 160px;
+  height: auto;
+}
+.adorno-top-right {
+  top: -60px;
+  right: -70px;
+    width: 160px;
+  height: auto;
+}
+.adorno-bottom-left {
+  bottom: -60px;
+  left: -70px;
+  transform: rotate(30deg);
+  width: 180px;
+  height: auto;
+}
+.adorno-bottom-right {
+  bottom: -60px;
+  right: -100px;
+  width: 200px;
+  transform: rotate(-10deg);
+  height: auto;
+}

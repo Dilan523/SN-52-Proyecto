@@ -1,0 +1,186 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #21b0a6 0%, #e0f7fa 100%);
+  overflow-y: auto;
+}
+
+.login-page-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+  padding-top: 80px;
+}
+
+.login-content {
+  width: 100%;
+  max-width: 1400px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.login-card {
+  width: 550px;
+  background: linear-gradient(135deg, #21b0a6 0%, #e0f7fa 100%);
+  padding: 34px 28px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  z-index: 3;
+}
+
+.login-title {
+  font-family: serif;
+  font-size: 4rem;
+  font-weight: 700;
+  color: #222;
+  margin: 10px 0;
+  text-align: center;
+}
+
+.login-subtitle {
+  text-align: center;
+  color: #545151;
+  margin-bottom: 24px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.login-form label {
+  font-size: 0.98rem;
+  color: #133;
+}
+
+.login-form input {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #9adaab;
+  font-size: 1rem;
+}
+
+.forgot-container {
+  text-align: right;
+}
+
+.forgot-link {
+  color: #178ea0;
+  font-size: 0.95rem;
+  text-decoration: underline;
+}
+
+.login-btn {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.5);
+  color: #000;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0 6px 18px rgba(0, 168, 132, 0.2);
+}
+
+.login-btn:hover {
+  background: #21b0a6;
+  color: #fff;
+}
+
+.register-text {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+.RecuperarContra {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.register-link {
+  color: #178ea0;
+  text-decoration: underline;
+}
+
+/* ========== Decoraciones login ========== */
+.login-decor-top-right {
+  position: absolute;
+  right: -100px;
+  top: -200px;
+  max-width: 450px;
+  width: 100%;
+  height: auto;
+  z-index: 1;
+}
+.login-decor-top-center {
+  position: absolute;
+  top: 50%;
+  left: 1%;
+  transform: translateX(-40%);
+  max-width: 350px;
+  width: 50%;
+  height: auto;
+  z-index: 1;
+}
+.login-decor-top-left {
+  position: absolute;
+  left: -200px;
+  top: -90px;
+  max-width: 500px;
+  width: 100%;
+  height: auto;
+  z-index: 1;
+}
+.login-decor-left {
+  position: absolute;
+  left: 1500px;
+  bottom: 40px;
+  max-width: 400px;
+  width: 100%;
+  height: auto;
+  z-index: 1;
+}
+
+/* Responsive adjustments for decorative images */
+@media (max-width: 768px) {
+  .login-decor-top-right,
+  .login-decor-top-center,
+  .login-decor-top-left,
+  .login-decor-left {
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-decor-top-right,
+  .login-decor-top-center,
+  .login-decor-top-left,
+  .login-decor-left {
+    display: none;
+  }
+}
+
+
+/* ========== Responsive ========== */
+@media (max-width: 980px) {
+  .login-card { width: 360px; }
+  .login-title { font-size: 2.4rem; }
+}
+
+@media (max-width: 640px) {
+  .login-card { width: 92%; padding: 26px; }
+  .login-title { font-size: 1.8rem; margin-bottom: 20px; }
+  .decor-left, .decor-rigth, .decor-arriba, .dere-arriba { display: none; }
+}
