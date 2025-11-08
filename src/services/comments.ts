@@ -37,7 +37,6 @@ interface ApiCommentResponse {
 interface ApiCommentCreate {
   contenido: string;
   noticia_id: number;
-  usuario_id: number;
 }
 
 interface CommentsCountResponse {
@@ -91,7 +90,7 @@ export const commentsService = {
   ): Promise<Comment[]> {
     try {
       const response = await api.get<ApiComment[]>(
-        `/api/comentarios/${noticiaId}?limit=${limit}&offset=${offset}`
+        `/api/comentarios/noticia/${noticiaId}?limit=${limit}&offset=${offset}`
       );
 
       return response.data.map((comment: ApiComment) => ({
@@ -117,19 +116,23 @@ export const commentsService = {
    */
   async addComment(
     noticiaId: number,
-    contenido: string,
-    usuarioId: number
+    contenido: string
   ): Promise<Comment> {
     try {
       const commentData: ApiCommentCreate = {
         contenido: contenido.trim(),
         noticia_id: noticiaId,
-        usuario_id: usuarioId
       };
+
+      // Attach token if present
+      const token = localStorage.getItem('token')?.replace(/^"|"$/g, '');
+      const headers: any = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
 
       const response = await api.post<ApiCommentResponse>(
         '/api/comentarios',
-        commentData
+        commentData,
+        { headers }
       );
 
       const data = response.data;
@@ -155,7 +158,11 @@ export const commentsService = {
    */
   async deleteComment(comentarioId: number, usuarioId: number): Promise<void> {
     try {
-      await api.delete(`/api/comentarios/${comentarioId}?usuario_id=${usuarioId}`);
+  const token = localStorage.getItem('token')?.replace(/^"|"$/g, '');
+  const headers: any = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  await api.delete(`/api/comentarios/${comentarioId}?usuario_id=${usuarioId}`, { headers });
     } catch (error) {
       console.error('Error deleting comment:', error);
       throw error;

@@ -13,16 +13,26 @@ import {
   Plus,
   Eye
 } from "lucide-react";
-import { UserContext } from "../../context/UserContextValue";
-import { crearNoticia } from "../../services/noticias";
+import axios from "axios";
+import { UserContext } from "../../context/UserContext";
+// use direct axios calls here; remove unused service imports
 import { useAlert } from "../../hooks/useAlert";
+// ProseMirror styles (recommended by editor lib)
+import 'prosemirror-view/style/prosemirror.css';
 import "./CrearArt.css";
 
 const CrearArt: React.FC = () => {
   const { user } = useContext(UserContext);
   const { showAlert } = useAlert();
+  // Permisos: solo roles permitidos pueden publicar
+    const allowedPublishRoles = ["escritor", "editor", "admin"];
+    type LocalUser = { rol?: string; rol_id?: number };
+    const localUser = user as unknown as LocalUser | null;
+    const canPublish = localUser ? (localUser.rol ? allowedPublishRoles.includes(localUser.rol) : (localUser.rol_id ? [1,2,4].includes(localUser.rol_id) : false)) : false;
   const [titulo, setTitulo] = useState<string>("");
   const [categoria, setCategoria] = useState<string>("");
+    type Categoria = { id_categoria: number; nombre: string; fecha_creacion?: string; estado?: number };
+    const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [fecha, setFecha] = useState<string>("");
   const [publicado, setPublicado] = useState<boolean>(false);
   const [borrador, setBorrador] = useState<boolean>(false);
@@ -95,18 +105,44 @@ const CrearArt: React.FC = () => {
     setEtiquetas(etiquetas.filter(e => e !== etiqueta));
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       agregarEtiqueta();
     }
   };
 
+  // Obtener categorías desde el backend
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const res = await axios.get<Categoria[]>("http://localhost:8000/categorias/");
+        setCategorias(res.data as Categoria[]);
+      } catch (err: unknown) {
+          console.error('Error cargando categorías', err);
+          showAlert("Error al cargar categorías", "error");
+        }
+    };
+    fetchCategorias();
+  }, [showAlert]);
+
+  // Revoke object URL for imagenPreview when it changes or component unmounts
   useEffect(() => {
     return () => {
       if (imagenPreview) URL.revokeObjectURL(imagenPreview);
     };
   }, [imagenPreview]);
+
+  // Helper: normalize token value in localStorage (some flows may store it wrapped in quotes)
+  const getToken = (): string | null => {
+    let t = localStorage.getItem("token");
+    if (!t) return null;
+    // strip wrapping quotes if present
+    if (t.length >= 2 && t.startsWith('"') && t.endsWith('"')) {
+      try { t = JSON.parse(t); } catch { t = t.slice(1, -1); }
+    }
+    return t;
+  };
 
   const validarFormulario = (): boolean => {
     if (!titulo.trim()) {
@@ -136,28 +172,77 @@ const CrearArt: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const noticiaData = {
+      // Verificar permisos en frontend antes de intentar la petición
+      if (!canPublish) {
+        showAlert("Tu cuenta no tiene permisos para publicar artículos.", "error");
+        setIsLoading(false);
+        return;
+      }
+      // Buscar el objeto de la categoría seleccionada por id
+      const categoriaObj = categorias.find(c => c.id_categoria === Number(categoria));
+      if (!categoriaObj) {
+        showAlert("Categoría inválida", "error");
+        setIsLoading(false);
+        return;
+      }
+      // Obtener token de autenticación
+      const token = getToken();
+      if (!token) {
+        // ensure local stored user/token are cleared so user must login again
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        showAlert("No estás autenticado. Inicia sesión.", "error");
+        setIsLoading(false);
+        return;
+      }
+      // Crear noticia en el backend
+      const noticiaPayload = {
         titulo: titulo.trim(),
+        introduccion: editor?.getText().slice(0, 200) || "",
         contenido: editor?.getHTML() || "",
-        contenidoTexto: editor?.getText() || "",
-        categoria,
-        fecha,
-        imagen: imagenPreview || undefined,
-        etiquetas,
-        autor: user ? `${user.nombre} ${user.apellidos}` : "Usuario Anónimo",
-        estado: (publicado ? "publicado" : "borrador") as "publicado" | "borrador"
+        categoria_id: categoriaObj.id_categoria,
+        // Backend uses: 1=borrador, 2=en revisión, 3=publicada
+        estado: publicado ? 3 : 1
       };
+      const noticiaRes = await axios.post<{ id_noticia: number }>("http://localhost:8000/api/noticias/", noticiaPayload, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const noticiaId = noticiaRes.data.id_noticia;
 
-      await crearNoticia(noticiaData);
+      // Subir imagen si existe
+      if (imagen) {
+        const formData = new FormData();
+        formData.append("file", imagen);
+        await axios.post(`http://localhost:8000/api/imagenes/?noticia_id=${noticiaId}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`
+          }
+        });
+      }
 
       showAlert("¡Artículo publicado exitosamente!", "success");
-
-      // Limpiar formulario
       limpiarFormulario();
-
-    } catch (error) {
-      console.error("Error al enviar el artículo:", error);
-      showAlert("Hubo un error al publicar el artículo. Intenta nuevamente.", "error");
+    } catch (err: unknown) {
+      console.error("Error al enviar el artículo:", err);
+  // Mostrar mensajes más informativos según el error
+  // intentamos extraer status y data si viene de axios
+  type AxiosErr = { response?: { status?: number; data?: { detail?: string } } };
+  const axiosErr = err as AxiosErr;
+  const status = axiosErr.response?.status;
+  const data = axiosErr.response?.data;
+      if (status === 401) {
+        // token inválido/expirado: limpiar y forzar re-login
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        showAlert(data?.detail || "No autorizado. Por favor inicia sesión nuevamente.", "error");
+      } else if (status === 403) {
+        showAlert(data?.detail || "No tienes permisos para crear noticias.", "error");
+      } else {
+        showAlert(data?.detail || "Hubo un error al publicar el artículo. Intenta nuevamente.", "error");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -216,6 +301,9 @@ const CrearArt: React.FC = () => {
   // Obtener fecha actual para establecer como mínimo
   const fechaActual = new Date().toISOString().split('T')[0];
 
+  // Nombre de la categoría seleccionada (útil para la vista previa)
+  const categoriaSeleccionadaNombre = categorias.find(c => c.id_categoria === Number(categoria))?.nombre || "";
+
   return (
     <div className="crearart-crear-articulo-container">
       <div className="crearart-header-section">
@@ -242,14 +330,14 @@ const CrearArt: React.FC = () => {
             {imagenPreview && (
               <img src={imagenPreview} alt="Imagen del artículo" className="crearart-preview-image" />
             )}
-            <div className="crearart-preview-meta">
-              <span className="crearart-preview-category">{categoria || "Sin categoría"}</span>
+              <div className="crearart-preview-meta">
+              <span className="crearart-preview-category">{categoriaSeleccionadaNombre || "Sin categoría"}</span>
               <h1 className="crearart-preview-title">{titulo || "Sin título"}</h1>
               <p className="crearart-preview-date">{fecha ? new Date(fecha).toLocaleDateString('es-ES') : "Sin fecha"}</p>
               {etiquetas.length > 0 && (
                 <div className="crearart-preview-tags">
-                  {etiquetas.map((etiqueta, index) => (
-                    <span key={index} className="crearart-preview-tag">#{etiqueta}</span>
+                  {etiquetas.map((etiqueta) => (
+                    <span key={etiqueta} className="crearart-preview-tag">#{etiqueta}</span>
                   ))}
                 </div>
               )}
@@ -328,11 +416,10 @@ const CrearArt: React.FC = () => {
                     className="crearart-form-select"
                     required
                   >
-                    <option value="">Seleccionar categoría</option>
-                    <option value="deportes">Deportes</option>
-                    <option value="bienestar">Bienestar</option>
-                    <option value="cultura">Cultura</option>
-                    <option value="arte">Arte</option>
+                    <option key="placeholder" value="">Seleccionar categoría</option>
+                    {categorias.map(cat => (
+                      <option key={cat.id_categoria} value={String(cat.id_categoria)}>{cat.nombre}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -373,8 +460,8 @@ const CrearArt: React.FC = () => {
 
                 {etiquetas.length > 0 && (
                   <div className="crearart-tags-list">
-                    {etiquetas.map((etiqueta, index) => (
-                      <span key={index} className="crearart-tag-item">
+                    {etiquetas.map((etiqueta) => (
+                      <span key={etiqueta} className="crearart-tag-item">
                         #{etiqueta}
                         <button
                           type="button"
@@ -499,7 +586,7 @@ const CrearArt: React.FC = () => {
             <button
               type="submit"
               className="crearart-btn-primary"
-              disabled={isLoading}
+              disabled={isLoading || !canPublish}
             >
               {isLoading ? (
                 <>
@@ -513,6 +600,11 @@ const CrearArt: React.FC = () => {
                 </>
               )}
             </button>
+            {!canPublish && (
+              <div style={{ marginLeft: 12, color: '#b00020' }}>
+                No tienes permisos para publicar. Solicita elevación de rol.
+              </div>
+            )}
           </div>
         </form>
       )}

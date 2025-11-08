@@ -10,6 +10,53 @@ import "./home.css";// Importación del archivo de estilos CSS
 // Importación de imágenes decorativas para el footer
 import CommentsModal from "../../components/CommentsModal";
 import Footer from "../../components/Footer";
+import axios from 'axios';
+
+// Helper: load published noticias from backend and map categoria_id -> nombre
+const fetchPublishedNoticiasByPrincipal = async (principal: string) => {
+  try {
+    const catsRes = await axios.get('http://localhost:8000/categorias/');
+    const categorias = (catsRes.data || []) as Array<{ id_categoria: number; nombre: string }>;
+    const idToName = new Map<number, string>();
+    categorias.forEach(c => idToName.set(c.id_categoria, c.nombre));
+
+    const noticiasRes = await axios.get('http://localhost:8000/api/noticias/', { params: { estado: 3, limit: 100 } });
+    type BackendNoticia = {
+      id_noticia: number;
+      titulo: string;
+      introduccion?: string;
+      contenido?: string;
+      categoria_id: number;
+      imagen?: string;
+      fecha_creacion?: string;
+    };
+    const noticiasBackend = (noticiasRes.data || []) as BackendNoticia[];
+
+    // Filtrar por categoría principal usando el mapeo estricto
+    const filtered = noticiasBackend.filter(n => {
+      const catName = idToName.get(n.categoria_id)?.toLowerCase();
+      return catName === principal.toLowerCase();
+    });
+
+    return filtered.map(n => ({
+      id: n.id_noticia,
+      titulo: n.titulo,
+      contenidoTexto: n.introduccion || n.contenido || '',
+      imagen: n.imagen ? (n.imagen.startsWith('http') ? n.imagen : `http://localhost:8000/${n.imagen.replace(/^\//, '')}`) : '',
+      categoria: idToName.get(n.categoria_id) || String(n.categoria_id),
+      fecha: n.fecha_creacion,
+      etiquetas: [],
+      likes: 0,
+      comentarios: 0,
+      compartidos: 0,
+      autor: 'Redacción SN-52',
+      estado: 'publicado'
+    }));
+  } catch (err) {
+    console.error('Error fetching backend noticias', err);
+    return [];
+  }
+};
 
 // Array de objetos que contiene las imágenes destacadas para mostrar en la barra lateral
 const imagenesDestacadas = [
@@ -69,7 +116,7 @@ export const Inicio: React.FC = () => {
   const [searchResults, setSearchResults] = useState<Noticia[]>([]);
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [showCommentsModal, setShowCommentsModal] = useState(false);
-  const [selectedNoticia, setSelectedNoticia] = useState<any>(null);
+  const [selectedNoticia, setSelectedNoticia] = useState<Partial<Noticia> | null>(null);
   const [noticiasCreadas, setNoticiasCreadas] = useState<Noticia[]>([]);
   const [noticiasDeportes, setNoticiasDeportes] = useState<Noticia[]>([]);
   const [noticiasArte, setNoticiasArte] = useState<Noticia[]>([]);
@@ -95,6 +142,53 @@ export const Inicio: React.FC = () => {
   setAllArticles(all);
 
     cargarNoticias();
+
+    // Also fetch published noticias from backend and merge them into each category (dedupe by title+category)
+    (async () => {
+      try {
+        const [deportesBackend, arteBackend, culturaBackend, bienestarBackend] = await Promise.all([
+          fetchPublishedNoticiasByPrincipal('deportes'),
+          fetchPublishedNoticiasByPrincipal('arte'),
+          fetchPublishedNoticiasByPrincipal('cultura'),
+          fetchPublishedNoticiasByPrincipal('bienestar'),
+        ]);
+
+        const mapToNoticia = (b: Partial<Noticia>): Noticia => ({
+          id: b.id || 0,
+          titulo: b.titulo || '',
+          contenido: (b as any).contenido || b.contenidoTexto || '',
+          contenidoTexto: b.contenidoTexto || (b as any).contenido || '',
+          categoria: b.categoria || '',
+          fecha: b.fecha || '',
+          imagen: b.imagen || '',
+          etiquetas: b.etiquetas || [],
+          likes: b.likes || 0,
+          comentarios: b.comentarios || 0,
+          compartidos: 0,
+          autor: 'Redacción SN-52',
+          estado: 'publicado'
+        });
+
+  const mergeAndSet = (backendList: Partial<Noticia>[], setter: (n: Noticia[]) => void, prevList: Noticia[]) => {
+          const mapped = backendList.map(mapToNoticia);
+          const combined = [...mapped, ...prevList];
+          const seen = new Set();
+          const deduped: Noticia[] = [];
+          for (const n of combined) {
+            const key = `${n.titulo?.toLowerCase().trim()}|${(n.categoria || '').toLowerCase().trim()}`;
+            if (!seen.has(key)) { seen.add(key); deduped.push(n); }
+          }
+          setter(deduped);
+        };
+
+        mergeAndSet(deportesBackend, setNoticiasDeportes, getNoticiasPorCategoriaPrincipal('deportes'));
+        mergeAndSet(arteBackend, setNoticiasArte, getNoticiasPorCategoriaPrincipal('arte'));
+        mergeAndSet(culturaBackend, setNoticiasCultura, getNoticiasPorCategoriaPrincipal('cultura'));
+        mergeAndSet(bienestarBackend, setNoticiasBienestar, getNoticiasPorCategoriaPrincipal('bienestar'));
+      } catch (err) {
+        console.error('Error merging backend noticias into home', err);
+      }
+    })();
 
     // Recargar noticias cuando cambie el localStorage (útil para desarrollo)
     const handleStorageChange = () => {
@@ -156,13 +250,14 @@ export const Inicio: React.FC = () => {
   };
 
   // Función para manejar el compartir de un artículo
-  const handleShare = (article: any) => {
-    shareNoticia(article);
+  const handleShare = (article: Partial<Noticia>) => {
+    shareNoticia(article as Noticia);
   };
 
   // Función para abrir el modal de comentarios
-  const handleOpenComments = (noticia: any) => {
+  const handleOpenComments = (noticia: Partial<Noticia>) => {
     setSelectedNoticia(noticia);
+    setCommentCounts(prev => ({ ...prev, [noticia.id as number]: noticia.comentarios || 0 }));
     setShowCommentsModal(true);
   };
 
@@ -558,7 +653,7 @@ export const Inicio: React.FC = () => {
                     <div className="news-content">
                       <span className="news-category">{noticia.categoria}</span>
                       <h3 className="news-title">{noticia.titulo}</h3>
-                      <p className="news-summary">{(noticia as any).resumen || (noticia as any).contenidoTexto}</p>
+                      <p className="news-summary">{(noticia as Partial<Noticia>).resumen || (noticia as Partial<Noticia>).contenidoTexto}</p>
                       <div className="news-meta">
                         <span className="news-author">{noticia.autor}</span>
                         <span className="news-date">{noticia.fecha}</span>

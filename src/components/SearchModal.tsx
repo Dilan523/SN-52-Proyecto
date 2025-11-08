@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import type { Noticia } from '../services/noticias';
 import './SearchModal.css';
 import { Link } from 'react-router-dom';
 import { Star, Calendar, X } from 'lucide-react';
+import axios from 'axios';
 
 type Props = {
   isOpen: boolean;
@@ -24,18 +25,80 @@ const scoreArticle = (a: Noticia, term: string) => {
 
 const SearchModal: React.FC<Props> = ({ isOpen, onClose, results, searchTerm }) => {
   const [sortBy, setSortBy] = useState<'relevance' | 'date'>('relevance');
+  const [backendResults, setBackendResults] = useState<Noticia[]>([]);
+
+  // Fetch published noticias from backend when modal opens
+  useEffect(() => {
+    if (isOpen && searchTerm.trim()) {
+      const fetchBackendResults = async () => {
+        try {
+          const catsRes = await axios.get('http://localhost:8000/categorias/');
+          const categorias = (catsRes.data || []) as Array<{ id_categoria: number; nombre: string }>;
+          const idToName = new Map<number, string>();
+          categorias.forEach(c => idToName.set(c.id_categoria, c.nombre));
+
+          const noticiasRes = await axios.get('http://localhost:8000/api/noticias/', { params: { estado: 3, limit: 100 } });
+          type BackendNoticia = {
+            id_noticia: number;
+            titulo: string;
+            introduccion?: string;
+            contenido?: string;
+            categoria_id: number;
+            imagen?: string;
+            fecha_creacion?: string;
+          };
+          const noticiasBackend = (noticiasRes.data || []) as BackendNoticia[];
+
+          const mapped = noticiasBackend.map(n => ({
+            id: n.id_noticia,
+            titulo: n.titulo,
+            contenido: n.contenido || '',
+            contenidoTexto: n.introduccion || n.contenido || '',
+            imagen: n.imagen ? (n.imagen.startsWith('http') ? n.imagen : `http://localhost:8000/${n.imagen.replace(/^\//, '')}`) : '',
+            categoria: idToName.get(n.categoria_id) || String(n.categoria_id),
+            fecha: n.fecha_creacion,
+            etiquetas: [],
+            likes: 0,
+            comentarios: 0,
+            compartidos: 0,
+            autor: 'Redacción SN-52',
+            estado: 'publicado'
+          } as Noticia));
+          setBackendResults(mapped);
+        } catch (err) {
+          console.error('Error fetching backend results for search', err);
+          setBackendResults([]);
+        }
+      };
+      fetchBackendResults();
+    } else {
+      setBackendResults([]);
+    }
+  }, [isOpen, searchTerm]);
+
+  // Combine static results with backend results
+  const allResults = useMemo(() => {
+    const combined = [...results, ...backendResults];
+    const seen = new Set();
+    const deduped: Noticia[] = [];
+    for (const n of combined) {
+      const key = `${n.titulo?.toLowerCase().trim()}|${(n.categoria || '').toLowerCase().trim()}`;
+      if (!seen.has(key)) { seen.add(key); deduped.push(n); }
+    }
+    return deduped;
+  }, [results, backendResults]);
 
   const scored = useMemo(() => {
-    const scoredList = results.map(r => ({ article: r, score: scoreArticle(r, searchTerm) }));
+    const scoredList = allResults.map(r => ({ article: r, score: scoreArticle(r, searchTerm) }));
     if (sortBy === 'relevance') {
       return scoredList.sort((a, b) => b.score - a.score || new Date(b.article.fecha).getTime() - new Date(a.article.fecha).getTime());
     }
     return scoredList.sort((a, b) => new Date(b.article.fecha).getTime() - new Date(a.article.fecha).getTime());
-  }, [results, searchTerm, sortBy]);
+  }, [allResults, searchTerm, sortBy]);
 
   if (!isOpen) return null;
 
-  const count = results.length;
+  const count = allResults.length;
 
   return (
     <div className="search-modal-overlay" onClick={onClose}>

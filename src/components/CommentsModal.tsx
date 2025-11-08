@@ -35,6 +35,7 @@ export const CommentsModal: React.FC<CommentsModalProps> = ({
     try {
       const fetchedComments = await commentsService.getComments(noticiaId);
       setComments(fetchedComments);
+      onCommentCountChange?.(noticiaId, fetchedComments.length);
     } catch (error) {
       console.error('Error loading comments:', error);
       setError('Error al cargar los comentarios. Intenta de nuevo.');
@@ -61,8 +62,7 @@ export const CommentsModal: React.FC<CommentsModalProps> = ({
     try {
       const newCommentData = await commentsService.addComment(
         noticiaId,
-        newComment,
-        parseInt(user.id)
+        newComment
       );
 
       setComments(prev => {

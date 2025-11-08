@@ -2,6 +2,7 @@ import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import Home from "./paginas/home/home";
 import Login from "./paginas/login/login";
+import ResetPassword from "./paginas/ResetPassword/ResetPassword";
 import Registro from "./paginas/register/register";
 import RecuperarContraseña from "./paginas/rec_contra/rec_contra";
 import Perfil from "./paginas/Perfil/perfil";
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="perfil" element={<Perfil />} />
         <Route path="rec_contra" element={<RecuperarContraseña />} />
         <Route path="crearArt" element={<CrearArt />} />
+        <Route path="reset-password" element={<ResetPassword />} />
       </Route>
     </Routes>
   );

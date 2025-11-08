@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Heart, MessageCircle, Share2, Bookmark, Plus } from 'lucide-react';
 import { Button, Card } from 'antd';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,56 @@ import CommentsModal from '../../components/CommentsModal';
 import Footer from '../../components/Footer';
 import { UserContext } from '../../context/UserContext';
 import { getNoticiasPorCategoriaPrincipal, toggleLikeNoticia, toggleSaveNoticia, shareNoticia, type Noticia } from '../../services/noticias';
+import axios from 'axios';
+
+// Helper: load published noticias from backend and map categoria_id -> nombre
+const fetchPublishedNoticiasByPrincipal = async (principal: string) => {
+  try {
+    // fetch categories to map ids -> names
+  const catsRes = await axios.get('http://localhost:8000/categorias/');
+  const categorias = (catsRes.data || []) as Array<{ id_categoria: number; nombre: string }>;
+    const idToName = new Map<number, string>();
+    categorias.forEach(c => idToName.set(c.id_categoria, c.nombre));
+
+    // fetch published noticias (estado=3)
+  const noticiasRes = await axios.get('http://localhost:8000/api/noticias/', { params: { estado: 3, limit: 100 } });
+    type BackendNoticia = {
+      id_noticia: number;
+      titulo: string;
+      introduccion?: string;
+      contenido?: string;
+      categoria_id: number;
+      imagen?: string;
+      fecha_creacion?: string;
+    };
+    const noticiasBackend = (noticiasRes.data || []) as BackendNoticia[];
+
+    // map to local Noticia shape and filter by principal category using getNoticiasPorCategoriaPrincipal logic
+    return noticiasBackend.map(n => ({
+      id: n.id_noticia,
+      titulo: n.titulo,
+      contenidoTexto: n.introduccion || n.contenido || '',
+      // Ensure image URL is absolute so browser requests backend static route
+      imagen: n.imagen ? (n.imagen.startsWith('http') ? n.imagen : `http://localhost:8000/${n.imagen.replace(/^\//, '')}`) : '',
+      categoria: idToName.get(n.categoria_id) || String(n.categoria_id),
+      fecha: n.fecha_creacion,
+      etiquetas: [],
+      likes: 0,
+      comentarios: 0
+    })).filter(nb => {
+      // map category name to principal using same rules as frontend service
+      const lower = (nb.categoria || '').toLowerCase();
+      if (['salud','entrenamiento','nutrición','recuperación','fútbol','atletismo','tecnología'].includes(lower)) return principal === 'deportes';
+      if (['literatura','música','cine','tradiciones'].includes(lower)) return principal === 'cultura';
+      if (['pintura','teatro','fotografía','música'].includes(lower)) return principal === 'arte';
+      if (lower === 'bienestar') return principal === 'bienestar';
+      return lower === principal;
+    });
+  } catch (err) {
+    console.error('Error fetching backend noticias', err);
+    return [];
+  }
+};
 
 
 interface Comment {
@@ -57,6 +107,44 @@ export default function Deportes() {
     };
 
     cargarNoticias();
+
+    // Also fetch published noticias from backend and merge them
+    (async () => {
+      const backendNoticias = await fetchPublishedNoticiasByPrincipal('deportes');
+        if (backendNoticias.length) {
+          // Map backend shape to our Noticia type
+          const mapped: Noticia[] = backendNoticias.map(b => ({
+            id: b.id,
+            titulo: b.titulo,
+            contenido: b.contenidoTexto,
+            contenidoTexto: b.contenidoTexto,
+            categoria: b.categoria,
+            fecha: b.fecha,
+            imagen: b.imagen,
+            etiquetas: b.etiquetas || [],
+            likes: b.likes || 0,
+            comentarios: b.comentarios || 0,
+            compartidos: 0,
+            autor: 'Redacción SN-52',
+            estado: 'publicado'
+          }));
+
+          // Merge backend and local noticias and deduplicate (by title+category)
+          setNoticiasCreadas(prev => {
+            const combined = [...mapped, ...prev];
+            const seen = new Set();
+            const deduped: Noticia[] = [];
+            for (const n of combined) {
+              const key = `${n.titulo?.toLowerCase().trim()}|${(n.categoria || '').toLowerCase().trim()}`;
+              if (!seen.has(key)) {
+                seen.add(key);
+                deduped.push(n);
+              }
+            }
+            return deduped;
+          });
+        }
+    })();
 
     // Recargar noticias cuando cambie el localStorage
     const handleStorageChange = () => {
@@ -195,15 +283,12 @@ export default function Deportes() {
       isSaved: false,
       commentsList: []
     });
+    // Ensure comment count is present in state
+    setCommentCounts(prev => ({ ...prev, [noticia.id]: noticia.comentarios }));
     setShowCommentsModal(true);
   };
 
-  const handleCommentCountChange = (noticiaId: number, count: number) => {
-    setCommentCounts(prev => ({
-      ...prev,
-      [noticiaId]: count
-    }));
-  };
+  // comment counts are stored in state; update via CommentsModal when needed
 
   const toggleLike = (id: number) => {
     setNews(news.map(item =>
@@ -223,6 +308,7 @@ export default function Deportes() {
 
   const handleOpenComments = (noticia: NewsItem) => {
     setSelectedNoticia(noticia);
+    setCommentCounts(prev => ({ ...prev, [noticia.id]: noticia.comments }));
     setShowCommentsModal(true);
   };
 

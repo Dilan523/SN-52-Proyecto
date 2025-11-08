@@ -8,6 +8,51 @@ import CommentsModal from '../../components/CommentsModal';
 import Footer from '../../components/Footer';
 import { UserContext } from '../../context/UserContext';
 import { getNoticiasPorCategoriaPrincipal, toggleLikeNoticia, toggleSaveNoticia, shareNoticia, type Noticia } from '../../services/noticias';
+import axios from 'axios';
+
+// Helper: load published noticias from backend and map categoria_id -> nombre
+const fetchPublishedNoticiasByPrincipal = async (principal: string) => {
+  try {
+    const catsRes = await axios.get('http://localhost:8000/categorias/');
+    const categorias = (catsRes.data || []) as Array<{ id_categoria: number; nombre: string }>;
+    const idToName = new Map<number, string>();
+    categorias.forEach(c => idToName.set(c.id_categoria, c.nombre));
+
+    const noticiasRes = await axios.get('http://localhost:8000/api/noticias/', { params: { estado: 3, limit: 100 } });
+    type BackendNoticia = {
+      id_noticia: number;
+      titulo: string;
+      introduccion?: string;
+      contenido?: string;
+      categoria_id: number;
+      imagen?: string;
+      fecha_creacion?: string;
+    };
+    const noticiasBackend = (noticiasRes.data || []) as BackendNoticia[];
+
+    return noticiasBackend.map(n => ({
+      id: n.id_noticia,
+      titulo: n.titulo,
+      contenidoTexto: n.introduccion || n.contenido || '',
+      imagen: n.imagen ? (n.imagen.startsWith('http') ? n.imagen : `http://localhost:8000/${n.imagen.replace(/^\//, '')}`) : '',
+      categoria: idToName.get(n.categoria_id) || String(n.categoria_id),
+      fecha: n.fecha_creacion,
+      etiquetas: [],
+      likes: 0,
+      comentarios: 0
+    })).filter(nb => {
+      const lower = (nb.categoria || '').toLowerCase();
+      if (['salud','entrenamiento','nutrición','recuperación','fútbol','atletismo','tecnología'].includes(lower)) return principal === 'deportes';
+      if (['literatura','música','cine','tradiciones'].includes(lower)) return principal === 'cultura';
+      if (['pintura','teatro','fotografía','música'].includes(lower)) return principal === 'arte';
+      if (lower === 'bienestar') return principal === 'bienestar';
+      return lower === principal;
+    });
+  } catch (err) {
+    console.error('Error fetching backend noticias', err);
+    return [];
+  }
+};
 
 interface Comment {
   id: number;
@@ -106,6 +151,42 @@ export default function Artes() {
     };
 
     cargarNoticias();
+
+    // Also fetch published noticias from backend and merge them
+    (async () => {
+      const backendNoticias = await fetchPublishedNoticiasByPrincipal('arte');
+      if (backendNoticias.length) {
+        const mapped: Noticia[] = backendNoticias.map(b => ({
+          id: b.id,
+          titulo: b.titulo,
+          contenido: b.contenidoTexto,
+          contenidoTexto: b.contenidoTexto,
+          categoria: b.categoria,
+          fecha: b.fecha || '',
+          imagen: b.imagen,
+          etiquetas: b.etiquetas || [],
+          likes: b.likes || 0,
+          comentarios: b.comentarios || 0,
+          compartidos: 0,
+          autor: 'Redacción SN-52',
+          estado: 'publicado'
+        }));
+
+        setNoticiasCreadas(prev => {
+          const combined = [...mapped, ...prev];
+          const seen = new Set();
+          const deduped: Noticia[] = [];
+          for (const n of combined) {
+            const key = `${n.titulo?.toLowerCase().trim()}|${(n.categoria || '').toLowerCase().trim()}`;
+            if (!seen.has(key)) {
+              seen.add(key);
+              deduped.push(n);
+            }
+          }
+          return deduped;
+        });
+      }
+    })();
 
     // Recargar noticias cuando cambie el localStorage
     const handleStorageChange = () => {
@@ -268,15 +349,12 @@ export default function Artes() {
       isSaved: false,
       commentsList: []
     });
+    // Ensure comment count is present in state
+    setCommentCounts(prev => ({ ...prev, [noticia.id]: noticia.comentarios }));
     setShowCommentsModal(true);
   };
 
-  const handleCommentCountChange = (noticiaId: number, count: number) => {
-    setCommentCounts(prev => ({
-      ...prev,
-      [noticiaId]: count
-    }));
-  };
+ 
 
   const toggleLike = (id: number) => {
     setNews(news.map(item =>
@@ -296,6 +374,7 @@ export default function Artes() {
 
   const handleOpenComments = (noticia: NewsItem) => {
     setSelectedNoticia(noticia);
+    setCommentCounts(prev => ({ ...prev, [noticia.id]: noticia.comments }));
     setShowCommentsModal(true);
   };
 
@@ -320,7 +399,7 @@ export default function Artes() {
     ));
   };
 
-  const handleShareArtTechnique = (technique: any) => {
+  const handleShareArtTechnique = (technique: { title: string; excerpt?: string }) => {
     // Simple share functionality, could be enhanced
     if (navigator.share) {
       navigator.share({

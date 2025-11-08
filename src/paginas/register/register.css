@@ -233,7 +233,7 @@
 
 .register-decor-top {
   position: absolute; 
-  top: 30px;
+  top: 40px;
   right: -150px;
   max-width: 400px;
   width: 100%;
@@ -251,7 +251,7 @@
 }
 .register-decor-bottom{
   position: absolute;
-  bottom: 500px;
+  bottom: 650px;
   left: -80px;
   max-width: 450px;
   width: 100%;
