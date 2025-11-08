@@ -1,0 +1,124 @@
+/* ======================================= */
+/* LEGAL PAGE STYLES */
+/* ======================================= */
+
+.legal-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 40px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.legal-container {
+  max-width: 900px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.legal-title {
+  background: linear-gradient(90deg, #66d1cd 0%, #2c7a7b 100%);
+  color: white;
+  margin: 0;
+  padding: 30px 40px;
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(102, 209, 205, 0.3);
+}
+
+.legal-content {
+  padding: 40px;
+  line-height: 1.8;
+  color: #333;
+}
+
+.legal-content p {
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.legal-content h2 {
+  color: #2c7a7b;
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin: 40px 0 20px 0;
+  padding-bottom: 10px;
+  border-bottom: 3px solid #e0f7fa;
+}
+
+.legal-content ul {
+  margin: 20px 0;
+  padding-left: 30px;
+}
+
+.legal-content li {
+  margin-bottom: 10px;
+  font-size: 1.05rem;
+}
+
+.legal-content strong {
+  color: #2c7a7b;
+  font-weight: 600;
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+  .legal-page {
+    padding: 20px 15px;
+  }
+
+  .legal-title {
+    font-size: 1.8rem;
+    padding: 25px 20px;
+  }
+
+  .legal-content {
+    padding: 25px 20px;
+  }
+
+  .legal-content h2 {
+    font-size: 1.4rem;
+  }
+
+  .legal-content p {
+    font-size: 1rem;
+  }
+
+  .acceptance-section {
+    padding: 20px;
+  }
+
+  .accept-button {
+    padding: 12px 25px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .legal-title {
+    font-size: 1.5rem;
+    padding: 20px 15px;
+  }
+
+  .legal-content {
+    padding: 20px 15px;
+  }
+
+  .legal-content h2 {
+    font-size: 1.2rem;
+  }
+
+  .acceptance-section {
+    padding: 15px;
+  }
+
+  .accept-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+  }
+}

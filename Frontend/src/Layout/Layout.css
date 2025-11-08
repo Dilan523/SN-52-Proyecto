@@ -1,0 +1,128 @@
+/* ==============================
+   ESTILOS GENERALES
+================================= */
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f5f8fa;
+  color: #222;
+  overflow-x: hidden;
+  height: 100%;
+  overflow-y: auto;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+main {
+  min-height: 100vh;
+}
+
+/* ==============================
+   HEADER GENERAL
+================================= */
+header {
+  background: linear-gradient(135deg, #21b0a6 0%, #e0f7fa 100%);
+  color: #222;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* ----- NAVBAR SUPERIOR (LOGO + BOTONES) ----- */
+.navbar-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1rem;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.navbar-logo img {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+}
+
+.navbar-logo span {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #222;
+  letter-spacing: 1px;
+}
+
+.navbar-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Botones generales */
+.btn {
+  background: #fff;
+  color: #222;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.btn:hover {
+  background: #66d1cd;
+  color: #fff;
+}
+
+/* ==============================
+   NAVBAR INFERIOR (SOLO PUBLIC LAYOUT)
+================================= */
+.navbar-bottom {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  background: #8ee0db;
+  padding: 0.8rem 1rem;
+}
+
+.navbar-bottom a {
+  background: #5ecfc6;
+  color: #222;
+  padding: 0.5rem 1.5rem;
+  border-radius: 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.navbar-bottom a:hover {
+  background: #fff;
+  color: #21b0a6;
+}
+
+/* ==============================
+   LAYOUTS ESPECÍFICOS
+================================= */
+.auth-layout main {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 80px);
+  overflow: auto;
+}
+
+.public-layout main {
+  width: 100%;
+}
