@@ -1,9 +1,16 @@
+<<<<<<< HEAD
 import React, { useMemo, useState, useEffect } from 'react';
+=======
+import React, { useMemo, useState } from 'react';
+>>>>>>> b8dfc7f7cb81bf0502490f2ffb16b692ab22afa4
 import type { Noticia } from '../services/noticias';
 import './SearchModal.css';
 import { Link } from 'react-router-dom';
 import { Star, Calendar, X } from 'lucide-react';
+<<<<<<< HEAD
 import axios from 'axios';
+=======
+>>>>>>> b8dfc7f7cb81bf0502490f2ffb16b692ab22afa4
 
 type Props = {
   isOpen: boolean;
@@ -25,6 +32,7 @@ const scoreArticle = (a: Noticia, term: string) => {
 
 const SearchModal: React.FC<Props> = ({ isOpen, onClose, results, searchTerm }) => {
   const [sortBy, setSortBy] = useState<'relevance' | 'date'>('relevance');
+<<<<<<< HEAD
   const [backendResults, setBackendResults] = useState<Noticia[]>([]);
 
   // Fetch published noticias from backend when modal opens
@@ -90,15 +98,28 @@ const SearchModal: React.FC<Props> = ({ isOpen, onClose, results, searchTerm }) 
 
   const scored = useMemo(() => {
     const scoredList = allResults.map(r => ({ article: r, score: scoreArticle(r, searchTerm) }));
+=======
+
+  const scored = useMemo(() => {
+    const scoredList = results.map(r => ({ article: r, score: scoreArticle(r, searchTerm) }));
+>>>>>>> b8dfc7f7cb81bf0502490f2ffb16b692ab22afa4
     if (sortBy === 'relevance') {
       return scoredList.sort((a, b) => b.score - a.score || new Date(b.article.fecha).getTime() - new Date(a.article.fecha).getTime());
     }
     return scoredList.sort((a, b) => new Date(b.article.fecha).getTime() - new Date(a.article.fecha).getTime());
+<<<<<<< HEAD
   }, [allResults, searchTerm, sortBy]);
 
   if (!isOpen) return null;
 
   const count = allResults.length;
+=======
+  }, [results, searchTerm, sortBy]);
+
+  if (!isOpen) return null;
+
+  const count = results.length;
+>>>>>>> b8dfc7f7cb81bf0502490f2ffb16b692ab22afa4
 
   return (
     <div className="search-modal-overlay" onClick={onClose}>

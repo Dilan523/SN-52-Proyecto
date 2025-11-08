@@ -32,13 +32,7 @@ const fetchPublishedNoticiasByPrincipal = async (principal: string) => {
     };
     const noticiasBackend = (noticiasRes.data || []) as BackendNoticia[];
 
-    // Filtrar por categoría principal usando el mapeo estricto
-    const filtered = noticiasBackend.filter(n => {
-      const catName = idToName.get(n.categoria_id)?.toLowerCase();
-      return catName === principal.toLowerCase();
-    });
-
-    return filtered.map(n => ({
+    return noticiasBackend.map(n => ({
       id: n.id_noticia,
       titulo: n.titulo,
       contenidoTexto: n.introduccion || n.contenido || '',
@@ -47,10 +41,7 @@ const fetchPublishedNoticiasByPrincipal = async (principal: string) => {
       fecha: n.fecha_creacion,
       etiquetas: [],
       likes: 0,
-      comentarios: 0,
-      compartidos: 0,
-      autor: 'Redacción SN-52',
-      estado: 'publicado'
+      comentarios: 0
     }));
   } catch (err) {
     console.error('Error fetching backend noticias', err);
